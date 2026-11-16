@@ -19,6 +19,17 @@ If the player answers correctly, they can continue playing or receive a reward.
 
 The project is also interesting from a programming perspective because it requires implementing different concepts.
 
+Libraries Used
+
+Lingua Poker uses the following Python libraries:
+
+- math: Mathematical operations.
+- random: Generating random values and shuffling cards.
+- collections.Counter: Counting elements.
+- unittest.mock: Simulating actions during testing.
+
+All these libraries are part of Python's standard library, so no additional packages or `pip install` commands are required.
+
 Algorithm:
 1. Display the main menu.
 2. Allow the player to select the language and difficulty level.
