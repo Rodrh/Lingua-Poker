@@ -6,81 +6,181 @@
 import math
 import random
 from collections import Counter
+from unittest.mock import patch
+from datetime import datetime
 
 # ==========================================
 # LISTA DE PREGUNTAS
 # ==========================================
 
-preguntas = [
-    {
-        "pregunta": "¿Qué significa 'raise' en Poker?",
-        "opciones": [
-            "Retirarse",
-            "Aumentar la apuesta",
-            "Repartir cartas"
-        ],
-        "correcta": "Aumentar la apuesta"
-    },
+preguntas_por_idioma = {
+    "English": [
+        {
+            "pregunta": "What does 'raise' mean in Poker?",
+            "opciones": ["Fold", "Increase the bet", "Deal cards"],
+            "correcta": "Increase the bet"
+        },
+        {
+            "pregunta": "What does 'fold' mean in Poker?",
+            "opciones": ["Give up the hand", "Increase the bet", "Win the game"],
+            "correcta": "Give up the hand"
+        },
+        {
+            "pregunta": "What does 'check' mean in Poker?",
+            "opciones": ["Pass without betting", "Fold", "Bet everything"],
+            "correcta": "Pass without betting"
+        },
+        {
+            "pregunta": "What does 'bet' mean in Poker?",
+            "opciones": ["Place a wager", "Shuffle", "Fold"],
+            "correcta": "Place a wager"
+        },
+        {
+            "pregunta": "What does 'pot' mean in Poker?",
+            "opciones": ["The prize pool", "A community card", "A player"],
+            "correcta": "The prize pool"
+        },
+        {
+            "pregunta": "What is the 'flop'?",
+            "opciones": ["The first three community cards", "The last card", "A bet"],
+            "correcta": "The first three community cards"
+        },
+        {
+            "pregunta": "What is the 'river'?",
+            "opciones": ["The fifth community card", "The first bet", "A pair"],
+            "correcta": "The fifth community card"
+        },
+        {
+            "pregunta": "What does 'call' mean?",
+            "opciones": ["Match the current bet", "Leave the game", "Win the pot"],
+            "correcta": "Match the current bet"
+        },
+        {
+            "pregunta": "What is a 'dealer'?",
+            "opciones": ["The person who deals the cards", "The winner", "The person who folds"],
+            "correcta": "The person who deals the cards"
+        },
+        {
+            "pregunta": "What is a 'kicker'?",
+            "opciones": ["A card used to break a tie", "A community card", "A type of bet"],
+            "correcta": "A card used to break a tie"
+        }
+    ],
 
-    {
-        "pregunta": "¿Qué significa 'fold' en Poker?",
-        "opciones": [
-            "Retirarse",
-            "Aumentar la apuesta",
-            "Ganar la partida"
-        ],
-        "correcta": "Retirarse"
-    },
+    "French": [
+        {
+            "pregunta": "Que signifie 'relancer' au Poker ?",
+            "opciones": ["Se coucher", "Augmenter la mise", "Distribuer les cartes"],
+            "correcta": "Augmenter la mise"
+        },
+        {
+            "pregunta": "Que signifie 'se coucher' au Poker ?",
+            "opciones": ["Abandonner la main", "Augmenter la mise", "Gagner la partie"],
+            "correcta": "Abandonner la main"
+        },
+        {
+            "pregunta": "Que signifie 'parole' au Poker ?",
+            "opciones": ["Ne pas miser", "Abandonner", "Miser toutes ses jetons"],
+            "correcta": "Ne pas miser"
+        },
+        {
+            "pregunta": "Que signifie 'miser' au Poker ?",
+            "opciones": ["Placer une mise", "Mélanger les cartes", "Abandonner"],
+            "correcta": "Placer une mise"
+        },
+        {
+            "pregunta": "Que signifie 'pot' au Poker ?",
+            "opciones": ["Le pot commun", "Une carte", "Un joueur"],
+            "correcta": "Le pot commun"
+        },
+        {
+            "pregunta": "Qu'est-ce que le 'flop' ?",
+            "opciones": ["Les trois premières cartes communes", "La dernière carte", "Une mise"],
+            "correcta": "Les trois premières cartes communes"
+        },
+        {
+            "pregunta": "Qu'est-ce que la 'river' ?",
+            "opciones": ["La cinquième carte commune", "La première mise", "Une paire"],
+            "correcta": "La cinquième carte commune"
+        },
+        {
+            "pregunta": "Que signifie 'suivre' au Poker ?",
+            "opciones": ["Égaler la mise actuelle", "Quitter la partie", "Gagner le pot"],
+            "correcta": "Égaler la mise actuelle"
+        },
+        {
+            "pregunta": "Qu'est-ce que le 'donneur' ?",
+            "opciones": ["La personne qui distribue les cartes", "Le gagnant", "Le joueur qui abandonne"],
+            "correcta": "La personne qui distribue les cartes"
+        },
+        {
+            "pregunta": "Qu'est-ce qu'un 'kicker' ?",
+            "opciones": ["Une carte qui départage une égalité", "Une carte commune", "Un type de mise"],
+            "correcta": "Une carte qui départage une égalité"
+        }
+    ]
+}
 
-    {
-        "pregunta": "¿Qué significa 'check' en Poker?",
-        "opciones": [
-            "Pasar sin apostar",
-            "Retirarse",
-            "Apostar todo"
-        ],
-        "correcta": "Pasar sin apostar"
-    },
-
-    {
-        "pregunta": "¿Qué significa 'bet' en Poker?",
-        "opciones": [
-            "Apostar",
-            "Barajar",
-            "Retirarse"
-        ],
-        "correcta": "Apostar"
-    },
-
-    {
-        "pregunta": "¿Qué significa 'pot' en Poker?",
-        "opciones": ["Pozo de apuestas", "Carta comunitaria", "Jugador"],
-        "correcta": "Pozo de apuestas"
-    },
-
-    {
-        "pregunta": "¿Qué significa 'flop' en Poker?",
-        "opciones": ["Las primeras tres cartas comunitarias", "La última carta", "Una apuesta"],
-        "correcta": "Las primeras tres cartas comunitarias"
-    },
-
-    {
-        "pregunta": "¿Qué significa 'river' en Poker?",
-        "opciones": ["La quinta carta comunitaria", "La primera apuesta", "Una pareja"],
-        "correcta": "La quinta carta comunitaria"
-    },
-
-    {
-        "pregunta": "¿Qué significa 'all-in' en Poker?",
-        "opciones": ["Apostar todas las fichas", "Retirarse", "Pasar sin apostar"],
-        "correcta": "Apostar todas las fichas"
-    }
-]
 
 
 # ==========================================
 # FUNCIONES PRINCIPALES
 # ==========================================
+
+
+def guardar_resultados(nombre, idioma, estadisticas):
+    fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open("resultados.txt", "a", encoding="utf-8") as archivo:
+        archivo.write("==============================\n")
+        archivo.write("LINGUA POKER - GAME RESULTS\n")
+        archivo.write("==============================\n")
+        archivo.write(f"Player: {nombre}\n")
+        archivo.write(f"Language: {idioma}\n")
+        archivo.write(f"Date: {fecha}\n")
+        archivo.write(f"Questions: {estadisticas['preguntas']}\n")
+        archivo.write(f"Correct answers: {estadisticas['correctas']}\n")
+        archivo.write(f"Incorrect answers: {estadisticas['incorrectas']}\n")
+        archivo.write(f"Total points: {estadisticas['puntos']}\n")
+        archivo.write("\n")
+
+    print("\nResults saved successfully!")
+
+
+def mostrar_estadisticas(estadisticas):
+    print("\n==============================")
+    print("     LEARNING STATISTICS")
+    print("==============================")
+
+    print("Questions answered:", estadisticas["preguntas"])
+    print("Correct answers:", estadisticas["correctas"])
+    print("Incorrect answers:", estadisticas["incorrectas"])
+    print("Total points:", estadisticas["puntos"])
+
+
+# Puntos
+def crear_estadisticas():
+    return {
+        "preguntas": 0,
+        "correctas": 0,
+        "incorrectas": 0,
+        "puntos": 0
+    }
+
+
+def actualizar_estadisticas(estadisticas, correcta):
+    estadisticas["preguntas"] += 1
+
+    if correcta:
+        estadisticas["correctas"] += 1
+        estadisticas["puntos"] += 10
+        print("+10 puntos")
+
+    else:
+        estadisticas["incorrectas"] += 1
+        estadisticas["puntos"] -= 5
+        print("-5 puntos")
+
 
 # Calcula el total del pot sumando dos apuestas.
 def calcularpot(bet1, bet2):
@@ -179,118 +279,132 @@ def reiniciar_apuestas(jugadores):
     for jugador in jugadores:
         jugador["apuesta"] = 0
 
-
+   
 def procesar_accion(jugador, apuesta_actual, pozo):
     # Muestra las acciones disponibles.
     # Comprueba que la acción sea válida.
-    # Calcula cuánto debe pagar el jugador.
-    # Actualiza sus fichas, su apuesta y el pozo.
-    # Si se retira, cambia su estado a inactivo.
+    # Repite el turno si el jugador introduce una acción incorrecta.
+    # Actualiza fichas, apuestas y pozo.
 
-    print("\nTurno de:", jugador["nombre"])
-    print("Tus fichas:", jugador["fichas"])
-    print("Tu apuesta actual:", jugador["apuesta"])
-    print("Apuesta máxima de la ronda:", apuesta_actual)
+    while True:
 
-    print("\n1. Check")
-    print("2. Call")
-    print("3. Raise")
-    print("4. Fold")
+        print("\nTurno de:", jugador["nombre"])
+        print("Tus fichas:", jugador["fichas"])
+        print("Tu apuesta actual:", jugador["apuesta"])
+        print("Apuesta máxima de la ronda:", apuesta_actual)
 
-    accion = input("Selecciona una acción: ").lower()
+        print("\n1. Check")
+        print("2. Call")
+        print("3. Raise")
+        print("4. Fold")
 
-    if accion == "check":
-        accion = "1"
-    elif accion == "call":
-        accion = "2"
-    elif accion == "raise":
-        accion = "3"
-    elif accion == "fold":
-        accion = "4"
+        accion = input("Selecciona una acción: ").lower()
 
-    if accion == "1":
-        if jugador["apuesta"] == apuesta_actual:
-            print("Has pasado.")
-        else:
-            print("No puedes hacer Check. Debes igualar la apuesta.")
-            return apuesta_actual, pozo
+        if accion == "check":
+            accion = "1"
+        elif accion == "call":
+            accion = "2"
+        elif accion == "raise":
+            accion = "3"
+        elif accion == "fold":
+            accion = "4"
 
-    elif accion == "2":
-        cantidad = apuesta_actual - jugador["apuesta"]
+        if accion == "1":
 
-        if cantidad == 0:
-            print("Ya has igualado la apuesta.")
-        elif cantidad <= jugador["fichas"]:
-            jugador["fichas"] -= cantidad
-            jugador["apuesta"] += cantidad
-            pozo += cantidad
-            print("Has igualado la apuesta.")
-        else:
-            print("No tienes suficientes fichas para hacer Call.")
-            return apuesta_actual, pozo
-
-    elif accion == "3":
-        nueva_apuesta = input("¿Cuál será tu apuesta total en esta ronda?: ")
-
-        if nueva_apuesta.isdigit():
-            nueva_apuesta = int(nueva_apuesta)
-            cantidad = nueva_apuesta - jugador["apuesta"]
-
-            if nueva_apuesta > apuesta_actual and cantidad <= jugador["fichas"]:
-                jugador["fichas"] -= cantidad
-                jugador["apuesta"] = nueva_apuesta
-                pozo += cantidad
-                apuesta_actual = nueva_apuesta
-                print("¡Has aumentado la apuesta!")
-            else:
-                print("Apuesta inválida.")
+            if jugador["apuesta"] == apuesta_actual:
+                print("Has pasado.")
                 return apuesta_actual, pozo
-        else:
-            print("Debes introducir un número.")
+
+            print("No puedes hacer Check. Debes igualar la apuesta.")
+
+        elif accion == "2":
+
+            cantidad = apuesta_actual - jugador["apuesta"]
+
+            if cantidad == 0:
+                print("Ya has igualado la apuesta.")
+                return apuesta_actual, pozo
+
+            elif cantidad < jugador["fichas"]:
+                jugador["fichas"] -= cantidad
+                jugador["apuesta"] += cantidad
+                pozo += cantidad
+
+                print("Has igualado la apuesta.")
+                return apuesta_actual, pozo
+
+            else:
+                print("No tienes suficientes fichas para hacer Call.")
+
+        elif accion == "3":
+
+            nueva_apuesta = input(
+                "¿Cuál será tu apuesta total en esta ronda?: "
+            )
+
+            if nueva_apuesta.isdigit():
+
+                nueva_apuesta = int(nueva_apuesta)
+                cantidad = nueva_apuesta - jugador["apuesta"]
+
+                if nueva_apuesta > apuesta_actual and cantidad < jugador["fichas"]:
+
+                    jugador["fichas"] -= cantidad
+                    jugador["apuesta"] = nueva_apuesta
+                    pozo += cantidad
+                    apuesta_actual = nueva_apuesta
+
+                    print("¡Has aumentado la apuesta!")
+                    return apuesta_actual, pozo
+
+                else:
+                    print("Apuesta inválida.")
+
+            else:
+                print("Debes introducir un número.")
+
+        elif accion == "4":
+
+            jugador["activo"] = False
+            print("Te has retirado de la ronda.")
             return apuesta_actual, pozo
 
-    elif accion == "4":
-        jugador["activo"] = False
-        print("Te has retirado de la ronda.")
-
-    else:
-        print("Acción inválida.")
-        return apuesta_actual, pozo
-
-    return apuesta_actual, pozo
+        else:
+            print("Acción inválida. Intenta nuevamente.")
 
 
 def accion_computadora(jugador, apuesta_actual, pozo):
-    # La computadora comprueba si necesita igualar la apuesta. Si no tiene suficientes fichas, se retira.
-    # Si no necesita pagar, puede pasar o retirarse aleatoriamente.
-
     print("\nTurno de:", jugador["nombre"])
 
-    if jugador["apuesta"] < apuesta_actual:
-        cantidad = apuesta_actual - jugador["apuesta"]
+    cantidad = apuesta_actual - jugador["apuesta"]
 
-        if cantidad <= jugador["fichas"]:
-            jugador["fichas"] -= cantidad
-            jugador["apuesta"] += cantidad
-            pozo += cantidad
-            print(jugador["nombre"], "hace Call.")
-        else:
-            jugador["activo"] = False
-            print(jugador["nombre"], "hace Fold.")
+    # Si no necesita igualar ninguna apuesta, hace Check.
+    if cantidad == 0:
+        print(jugador["nombre"], "hace Check.")
+        return apuesta_actual, pozo
+
+    # Calcula cuánto representa el Call respecto a sus fichas.
+    porcentaje_fichas = cantidad / jugador["fichas"]
+
+    # Decide si le conviene igualar la apuesta.
+    if (
+        cantidad < jugador["fichas"]
+        and (porcentaje_fichas <= 0.10 or cantidad <= pozo * 0.50)
+    ):
+        jugador["fichas"] -= cantidad
+        jugador["apuesta"] += cantidad
+        pozo += cantidad
+
+        print(jugador["nombre"], "hace Call.")
 
     else:
-        decision = random.choice(["check", "check", "fold"])
-
-        if decision == "check":
-            print(jugador["nombre"], "hace Check.")
-        else:
-            jugador["activo"] = False
-            print(jugador["nombre"], "hace Fold.")
+        jugador["activo"] = False
+        print(jugador["nombre"], "hace Fold.")
 
     return apuesta_actual, pozo
 
 
-def ronda_apuestas(jugadores, pozo):
+def ronda_apuestas(jugadores, pozo,idioma="English", estadisticas=None):
     # Establece la apuesta actual en cero.
     # Recorre los jugadores activos y les permite realizar acciones.
     # Si alguien aumenta la apuesta, los demás deben responder.
@@ -312,7 +426,9 @@ def ronda_apuestas(jugadores, pozo):
 
                 if i == 0:
                     print("\nAntes de realizar tu acción...")
-                    hacerpregunta()
+                    correcta = hacerpregunta(idioma)
+                    if estadisticas is not None:
+                        actualizar_estadisticas(estadisticas, correcta)
 
                     apuesta_actual, pozo = procesar_accion(
                         jugador,
@@ -446,7 +562,7 @@ def repartir_river(baraja):
     return repartir_carta(baraja)
 
 
-def jugar_rondas(jugadores, baraja):
+def jugar_rondas(jugadores, baraja,idioma="English", estadisticas=None):
     # Ejecuta las cuatro rondas de Texas Hold'em.
     # Después de cada etapa, organiza una ronda de apuestas.
     # Reinicia las apuestas individuales antes de cada nueva ronda.
@@ -459,7 +575,12 @@ def jugar_rondas(jugadores, baraja):
     print("          PRE-FLOP")
     print("==============================")
 
-    pozo = ronda_apuestas(jugadores, pozo)
+    pozo = ronda_apuestas(
+    jugadores,
+    pozo,
+    idioma,
+    estadisticas
+    )
 
     if sum(jugador["activo"] for jugador in jugadores) <= 1:
         return cartas_comunitarias, pozo
@@ -475,7 +596,12 @@ def jugar_rondas(jugadores, baraja):
 
     mostrar_cartas(flop)
 
-    pozo = ronda_apuestas(jugadores, pozo)
+    pozo = ronda_apuestas(
+        jugadores,
+        pozo,
+        idioma,
+        estadisticas
+        )
 
     if sum(jugador["activo"] for jugador in jugadores) <= 1: # sum suma los valroes de una colección
         return cartas_comunitarias, pozo
@@ -491,7 +617,12 @@ def jugar_rondas(jugadores, baraja):
 
     mostrar_cartas(cartas_comunitarias)
 
-    pozo = ronda_apuestas(jugadores, pozo)
+    pozo = ronda_apuestas(
+        jugadores,
+        pozo,
+        idioma,
+        estadisticas
+        )
 
     if sum(jugador["activo"] for jugador in jugadores) <= 1:
         return cartas_comunitarias, pozo
@@ -509,7 +640,12 @@ def jugar_rondas(jugadores, baraja):
 
     reiniciar_apuestas(jugadores)
 
-    pozo = ronda_apuestas(jugadores, pozo)
+    pozo = ronda_apuestas(
+        jugadores,
+        pozo,
+        idioma,
+        estadisticas
+        )
 
     return cartas_comunitarias, pozo
 
@@ -784,18 +920,39 @@ def nombre_combinacion(puntuacion):
 # PREGUNTAS
 # ==========================================
 
+
+def seleccionar_idioma():
+    while True:
+        print("\n==============================")
+        print("       SELECT LANGUAGE")
+        print("==============================")
+        print("1. English")
+        print("2. Français")
+
+        opcion = input("Choose an option: ")
+
+        if opcion == "1":
+            return "English"
+
+        elif opcion == "2":
+            return "French"
+
+        else:
+            print("Invalid option. Try again.")
+
+
+
 # Hace una pregunta aleatoria de vocabulario.
-def hacerpregunta():
+def hacerpregunta(idioma="English"):
     # Selecciona una pregunta aleatoria.
     # Copia y mezcla sus opciones.
     # Muestra las opciones numeradas.
     # Recibe la respuesta del usuario.
     # Comprueba si es correcta, devuelve True o False.
 
-    pregunta = random.choice(preguntas)
+    pregunta = random.choice(preguntas_por_idioma[idioma])
 
     opciones = pregunta["opciones"].copy()
-
     random.shuffle(opciones)
 
     print("\nPregunta:")
@@ -807,11 +964,9 @@ def hacerpregunta():
     respuesta = input("Selecciona una opción: ")
 
     if respuesta.isdigit():
-
         respuesta = int(respuesta)
 
-        if respuesta >= 1 and respuesta <= len(opciones):
-
+        if 1 <= respuesta <= len(opciones):
             respuesta_usuario = opciones[respuesta - 1]
 
             if respuesta_usuario == pregunta["correcta"]:
@@ -822,6 +977,7 @@ def hacerpregunta():
     print("La respuesta era:", pregunta["correcta"])
 
     return False
+
 
 
 # ==========================================
@@ -980,6 +1136,112 @@ def tests():
 
     for jugador in jugadores_prueba:
         assert jugador["apuesta"] == 0
+
+
+    # Prueba de consistencia del pozo y las fichas.
+
+    jugadores_prueba = [
+        crear_jugador("Player 1", 1500),
+        crear_jugador("Computer 1", 1500),
+        crear_jugador("Computer 2", 1500)
+    ]
+
+    pozo_prueba = 0
+
+    for jugador in jugadores_prueba:
+        apuesta_prueba = 100
+
+        jugador["fichas"] -= apuesta_prueba
+        jugador["apuesta"] += apuesta_prueba
+        pozo_prueba += apuesta_prueba
+
+    total_apuestas = sum(
+        jugador["apuesta"]
+        for jugador in jugadores_prueba
+    )
+
+    total_fichas = sum(
+        jugador["fichas"]
+        for jugador in jugadores_prueba
+    )
+
+    assert pozo_prueba == total_apuestas
+    assert total_fichas + pozo_prueba == 4500
+
+
+    # Prueba de una ronda donde todos hacen Check.
+
+    jugadores_prueba = crear_jugadores()
+
+    def computadora_check(jugador, apuesta_actual, pozo):
+        return apuesta_actual, pozo
+
+    with patch("builtins.input", return_value="1"):
+        with patch("__main__.hacerpregunta"):
+            with patch(
+                "__main__.accion_computadora",
+                side_effect=computadora_check
+            ):
+                pozo_prueba = ronda_apuestas(
+                    jugadores_prueba,
+                    0
+                )
+
+    assert pozo_prueba == 0
+
+    for jugador in jugadores_prueba:
+        assert jugador["activo"] == True
+        assert jugador["apuesta"] == 0
+
+    
+    # Prueba de una ronda donde el jugador hace Raise
+    # y las computadoras responden con Call.
+
+    jugadores_prueba = crear_jugadores()
+
+    def computadora_call(jugador, apuesta_actual, pozo):
+        cantidad = apuesta_actual - jugador["apuesta"]
+
+        jugador["fichas"] -= cantidad
+        jugador["apuesta"] += cantidad
+        pozo += cantidad
+
+        return apuesta_actual, pozo
+
+    with patch("builtins.input", side_effect=["3", "100"]):
+        with patch("__main__.hacerpregunta"):
+            with patch(
+                "__main__.accion_computadora",
+                side_effect=computadora_call
+            ):
+                pozo_prueba = ronda_apuestas(
+                    jugadores_prueba,
+                    0
+                )
+
+    assert pozo_prueba == 300
+
+    for jugador in jugadores_prueba:
+        assert jugador["apuesta"] == 100
+        assert jugador["fichas"] == 1400
+        assert jugador["activo"] == True
+
+
+    # Prueba de Check de la computadora.
+
+    computadora_prueba = crear_jugador("Computer Test", 1500)
+
+    apuesta, pozo_prueba = accion_computadora(
+        computadora_prueba,
+        0,
+        0
+    )
+
+    assert computadora_prueba["activo"] == True
+    assert computadora_prueba["fichas"] == 1500
+    assert computadora_prueba["apuesta"] == 0
+    assert pozo_prueba == 0
+
 
     # Pruebas para evaluar combinaciones.
     escalera_prueba = [10, 11, 12, 13, 14]
@@ -1163,12 +1425,245 @@ def tests():
 
         assert resultado[0] == resultado_esperado
 
-    #Pruebas del sistema educativo.
-    assert len(preguntas) >= 8
+    
+    # Pruebas de casos especiales con siete cartas.
 
-    for pregunta in preguntas:
-        assert len(pregunta["opciones"]) == 3
-        assert pregunta["correcta"] in pregunta["opciones"]
+    def crear_mano_prueba(cartas):
+        return [
+            {"valor": valor, "palo": palo}
+            for valor, palo in cartas
+        ]
+
+    # Prueba 1: Dos escaleras posibles.
+    # Debe elegir la escalera más alta.
+    mano_escaleras = crear_mano_prueba([
+        ("5", "Hearts"),
+        ("6", "Clubs"),
+        ("7", "Diamonds"),
+        ("8", "Spades"),
+        ("9", "Hearts"),
+        ("10", "Clubs"),
+        ("2", "Diamonds")
+    ])
+
+    assert evaluar_mano(mano_escaleras) == (4, 10)
+
+    # Prueba 2: Dos ternas.
+    # Debe formar Full House con las dos ternas.
+    mano_dos_ternas = crear_mano_prueba([
+        ("A", "Hearts"),
+        ("A", "Clubs"),
+        ("A", "Diamonds"),
+        ("K", "Hearts"),
+        ("K", "Clubs"),
+        ("K", "Diamonds"),
+        ("2", "Spades")
+    ])
+
+    assert evaluar_mano(mano_dos_ternas) == (6, 14, 13)
+
+    # Prueba 3: Tres parejas.
+    # Debe elegir las dos parejas más altas.
+    mano_tres_parejas = crear_mano_prueba([
+        ("A", "Hearts"),
+        ("A", "Clubs"),
+        ("K", "Diamonds"),
+        ("K", "Spades"),
+        ("Q", "Hearts"),
+        ("Q", "Clubs"),
+        ("J", "Diamonds")
+    ])
+
+    assert evaluar_mano(mano_tres_parejas) == (2, 14, 13, 12)
+
+    # Prueba 4: Color con más de cinco cartas.
+    # Debe seleccionar las cinco cartas más altas.
+    mano_color = crear_mano_prueba([
+        ("A", "Hearts"),
+        ("K", "Hearts"),
+        ("Q", "Hearts"),
+        ("J", "Hearts"),
+        ("9", "Hearts"),
+        ("7", "Hearts"),
+        ("2", "Clubs")
+    ])
+
+    assert evaluar_mano(mano_color) == (5, 14, 13, 12, 11, 9)
+
+    # Prueba 5: Escalera de color.
+    # Debe reconocerla por encima de un color normal.
+    mano_escalera_color = crear_mano_prueba([
+        ("5", "Hearts"),
+        ("6", "Hearts"),
+        ("7", "Hearts"),
+        ("8", "Hearts"),
+        ("9", "Hearts"),
+        ("A", "Clubs"),
+        ("K", "Spades")
+    ])
+
+    assert evaluar_mano(mano_escalera_color) == (8, 9)
+
+
+    # Función auxiliar para crear manos de prueba.
+    def crear_mano_prueba(cartas):
+        return [
+            {"valor": valor, "palo": palo}
+            for valor, palo in cartas
+        ]
+
+    # Prueba 1: pareja de Ases con diferentes kickers.
+    mano_1 = crear_mano_prueba([
+        ("A", "Hearts"),
+        ("A", "Clubs"),
+        ("K", "Diamonds"),
+        ("Q", "Spades"),
+        ("9", "Hearts"),
+        ("7", "Clubs"),
+        ("2", "Diamonds")
+    ])
+
+    mano_2 = crear_mano_prueba([
+        ("A", "Diamonds"),
+        ("A", "Spades"),
+        ("Q", "Hearts"),
+        ("J", "Clubs"),
+        ("9", "Diamonds"),
+        ("7", "Spades"),
+        ("2", "Clubs")
+    ])
+
+    assert evaluar_mano(mano_1) > evaluar_mano(mano_2)
+
+    # Prueba 2: dos parejas con diferentes kickers.
+    mano_1 = crear_mano_prueba([
+        ("A", "Hearts"),
+        ("A", "Clubs"),
+        ("K", "Diamonds"),
+        ("K", "Spades"),
+        ("Q", "Hearts"),
+        ("7", "Clubs"),
+        ("2", "Diamonds")
+    ])
+
+    mano_2 = crear_mano_prueba([
+        ("A", "Diamonds"),
+        ("A", "Spades"),
+        ("K", "Hearts"),
+        ("K", "Clubs"),
+        ("J", "Diamonds"),
+        ("7", "Spades"),
+        ("2", "Clubs")
+    ])
+
+    assert evaluar_mano(mano_1) > evaluar_mano(mano_2)
+
+    # Prueba 3: Flush con diferentes cartas altas.
+    mano_1 = crear_mano_prueba([
+        ("A", "Hearts"),
+        ("J", "Hearts"),
+        ("9", "Hearts"),
+        ("6", "Hearts"),
+        ("3", "Hearts"),
+        ("K", "Clubs"),
+        ("2", "Diamonds")
+    ])
+
+    mano_2 = crear_mano_prueba([
+        ("A", "Diamonds"),
+        ("Q", "Diamonds"),
+        ("9", "Diamonds"),
+        ("6", "Diamonds"),
+        ("3", "Diamonds"),
+        ("K", "Clubs"),
+        ("2", "Hearts")
+    ])
+
+    assert evaluar_mano(mano_2) > evaluar_mano(mano_1)
+
+    # Prueba 4: escaleras de diferentes alturas.
+    mano_1 = crear_mano_prueba([
+        ("6", "Hearts"),
+        ("7", "Clubs"),
+        ("8", "Diamonds"),
+        ("9", "Spades"),
+        ("10", "Hearts"),
+        ("K", "Clubs"),
+        ("2", "Diamonds")
+    ])
+
+    mano_2 = crear_mano_prueba([
+        ("5", "Hearts"),
+        ("6", "Clubs"),
+        ("7", "Diamonds"),
+        ("8", "Spades"),
+        ("9", "Hearts"),
+        ("K", "Clubs"),
+        ("2", "Diamonds")
+    ])
+
+    assert evaluar_mano(mano_1) > evaluar_mano(mano_2)
+
+    # Prueba 5: Full House con diferentes parejas.
+    mano_1 = crear_mano_prueba([
+        ("A", "Hearts"),
+        ("A", "Clubs"),
+        ("A", "Diamonds"),
+        ("K", "Hearts"),
+        ("K", "Spades"),
+        ("3", "Clubs"),
+        ("2", "Diamonds")
+    ])
+
+    mano_2 = crear_mano_prueba([
+        ("A", "Spades"),
+        ("A", "Diamonds"),
+        ("A", "Clubs"),
+        ("Q", "Hearts"),
+        ("Q", "Spades"),
+        ("3", "Diamonds"),
+        ("2", "Clubs")
+    ])
+
+    assert evaluar_mano(mano_1) > evaluar_mano(mano_2)
+
+
+    # Pruebas para evitar que las computadoras hagan All-in.
+
+    computadora_prueba = crear_jugador("Computer Test", 100)
+
+    apuesta, pozo_prueba = accion_computadora(
+        computadora_prueba,
+        100,
+        0
+    )
+
+    assert computadora_prueba["activo"] == False
+    assert computadora_prueba["fichas"] == 100
+    assert pozo_prueba == 0
+
+    computadora_prueba = crear_jugador("Computer Test", 101)
+
+    apuesta, pozo_prueba = accion_computadora(
+        computadora_prueba,
+        100,
+        200
+    )
+
+    assert computadora_prueba["activo"] == True
+    assert computadora_prueba["fichas"] == 1
+    assert computadora_prueba["apuesta"] == 100
+    assert pozo_prueba == 300
+
+    # Pruebas del sistema educativo.
+
+    assert len(preguntas_por_idioma["English"]) >= 10
+    assert len(preguntas_por_idioma["French"]) >= 10
+
+    for idioma in preguntas_por_idioma:
+        for pregunta in preguntas_por_idioma[idioma]:
+            assert len(pregunta["opciones"]) == 3
+            assert pregunta["correcta"] in pregunta["opciones"]
 
 
     print("¡Todas las pruebas funcionan!")
@@ -1179,6 +1674,14 @@ def tests():
 # ==========================================
 
 tests()
+
+print("\n==============================")
+print("        LINGUA POKER")
+print("==============================")
+
+idioma = seleccionar_idioma()
+
+estadisticas = crear_estadisticas()
 
 jugadores = crear_jugadores()
 baraja = crear_baraja()
@@ -1195,7 +1698,9 @@ mostrar_cartas(jugadores[0]["cartas"])
 
 cartas_comunitarias, pozo = jugar_rondas(
     jugadores,
-    baraja
+    baraja,
+    idioma,
+    estadisticas
 )
 
 finalizar_partida(
@@ -1203,6 +1708,23 @@ finalizar_partida(
     cartas_comunitarias,
     pozo
 )
+
+mostrar_estadisticas(estadisticas)
+
+guardar = input("\nDo you want to save your results? (yes/no): ").lower()
+
+if guardar == "yes":
+    nombre = input("Enter your name: ")
+
+    while nombre.strip() == "":
+        print("Name cannot be empty.")
+        nombre = input("Enter your name: ")
+
+    guardar_resultados(nombre, idioma, estadisticas)
+
+else:
+    print("Results were not saved.")
+
 
 print("\n==============================")
 print("       ESTADO FINAL")
@@ -1225,4 +1747,3 @@ mostrar_jugadores(jugadores)
 
 print("\nPozo acumulado:", pozo)
 print("Cartas restantes:", len(baraja))
-
