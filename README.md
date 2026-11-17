@@ -19,6 +19,7 @@ If the player answers correctly, they can continue playing or receive a reward.
 
 The project is also interesting from a programming perspective because it requires implementing different concepts.
 
+
 Libraries Used
 
 Lingua Poker uses the following Python libraries:
@@ -27,33 +28,32 @@ Lingua Poker uses the following Python libraries:
 - random: Generating random values and shuffling cards.
 - collections.Counter: Counting elements.
 - unittest.mock: Simulating actions during testing.
+- datetime: Recording the date and time when game results are saved
 
 All these libraries are part of Python's standard library, so no additional packages or `pip install` commands are required.
 
 Algorithm:
-1. Display the main menu.
-2. Allow the player to select the language and difficulty level.
-3. Initialize the player's score, chips, and game settings.
-4. Create a standard deck of 52 cards.
-5. Shuffle the deck randomly.
-6. Deal the initial cards to the player and the computer.
-7. Display the player's cards.
-8. Ask the player a language-learning question.
-9. Check the player's answer.
-10. If the answer is correct, give the player a reward.
-11. If the answer is incorrect, apply a small penalty or continue without a reward.
-12. Allow the player to perform a Poker action, such as:
-    - Check
-    - Bet
-    - Raise
-    - Fold
-13. Continue the Poker round according to the rules of the game.
-14. Compare the player's hand with the computer's hand.
-15. Determine the winner.
-16. Update the player's chips, score, and language-learning progress.
-17. Ask the player if they want to play another round.
-18. If the player chooses Yes, return to step 4. 
-19. If the player chooses No, display the final score and learning statistics.
-20. Ask if the player wants to save their score.
-21. If yes, save name and score
-22. End the program.
+1. Executed the automated tests.
+2. Display the Lingua Poker title.
+3. Allow the player to choose language.
+4. Initialize the player's statistics
+5. Create the player and two computer opponents.
+6. Create a standard deck.
+7. Shuffle deck
+8. Deal two private cards to each participant.
+9. Display the player's private cards.
+10. Start the Pre-Flop betting round.
+11. Ask the player a random vocabulary question.
+12. Check the answer
+13. Award 10 points for a correct answer or subtract 5 if incorrect.
+14. Allow the player to perform the action.
+15. Allow computer opponents to make decisions.
+16. Continue through Flop, Turn, and River betting rounds.
+17. Deal the community cards.
+18. Evaluate the active player's hands.
+19. Determine the winner/s.
+20. Distribute the pot among the winners/s.
+21. Display the player's educational statistics.
+22. Ask whether the player wants to save the results.
+23. If the player choose Yes, request their name and save results in the extra file.
+24. End program.
