@@ -57,3 +57,12 @@ Algorithm:
 22. Ask whether the player wants to save the results.
 23. If the player choose Yes, request their name and save results in the extra file.
 24. End program.
+
+Python API references
+
+- [Python `math` module](https://docs.python.org/3/library/math.html)
+- [Python `random` module](https://docs.python.org/3/library/random.html)
+- [Python `collections.Counter`](https://docs.python.org/3/library/collections.html#collections.Counter)
+- [Python `unittest.mock`](https://docs.python.org/3/library/unittest.mock.html)
+- [Python `datetime`](https://docs.python.org/3/library/datetime.html)
+- [Python reading and writing files](https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files)
