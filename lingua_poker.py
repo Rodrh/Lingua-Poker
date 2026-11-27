@@ -156,6 +156,17 @@ def mostrar_estadisticas(estadisticas):
     print("Correct answers:", estadisticas["correctas"])
     print("Incorrect answers:", estadisticas["incorrectas"])
     print("Total points:", estadisticas["puntos"])
+    porcentaje = calcular_porcentaje_aciertos(estadisticas)
+    print("Accuracy:", f"{porcentaje:.1f}%")
+
+
+# Calcula el porcentaje de respuestas correctas de forma segura.
+def calcular_porcentaje_aciertos(estadisticas):
+    # Si no se han respondido preguntas, evita dividir entre cero.
+    # Divide las respuestas correctas entre el total y convierte a porcentaje.
+    if estadisticas["preguntas"] == 0:
+        return 0
+    return (estadisticas["correctas"] / estadisticas["preguntas"]) * 100
 
 
 # Puntos
@@ -1666,84 +1677,96 @@ def tests():
             assert pregunta["correcta"] in pregunta["opciones"]
 
 
+    # Pruebas del cálculo de porcentaje de respuestas correctas.
+    estadisticas_prueba = {
+        "preguntas": 4, "correctas": 3, "incorrectas": 1, "puntos": 25
+    }
+    assert calcular_porcentaje_aciertos(estadisticas_prueba) == 75
+    assert calcular_porcentaje_aciertos(crear_estadisticas()) == 0
+
     print("¡Todas las pruebas funcionan!")
 
 
 # ==========================================
-# INICIO
+# MENU Y FLUJO PRINCIPAL
 # ==========================================
 
-tests()
-
-print("\n==============================")
-print("        LINGUA POKER")
-print("==============================")
-
-idioma = seleccionar_idioma()
-
-estadisticas = crear_estadisticas()
-
-jugadores = crear_jugadores()
-baraja = crear_baraja()
-revolver_baraja(baraja)
-
-print("\n==============================")
-print("        LINGUA POKER")
-print("==============================")
-
-repartir_cartas_privadas(jugadores, baraja)
-
-print("\nTus cartas privadas:")
-mostrar_cartas(jugadores[0]["cartas"])
-
-cartas_comunitarias, pozo = jugar_rondas(
-    jugadores,
-    baraja,
-    idioma,
-    estadisticas
-)
-
-finalizar_partida(
-    jugadores,
-    cartas_comunitarias,
-    pozo
-)
-
-mostrar_estadisticas(estadisticas)
-
-guardar = input("\nDo you want to save your results? (yes/no): ").lower()
-
-if guardar == "yes":
-    nombre = input("Enter your name: ")
-
-    while nombre.strip() == "":
-        print("Name cannot be empty.")
-        nombre = input("Enter your name: ")
-
-    guardar_resultados(nombre, idioma, estadisticas)
-
-else:
-    print("Results were not saved.")
+def mostrar_resultados_guardados():
+    # Abre el archivo de resultados y muestra su contenido.
+    # Si todavía no existe, informa al jugador sin detener el programa.
+    try:
+        with open("resultados.txt", "r", encoding="utf-8") as archivo:
+            contenido = archivo.read()
+            if contenido.strip():
+                print("\n========== RESULTADOS GUARDADOS ==========")
+                print(contenido)
+            else:
+                print("El archivo de resultados está vacío.")
+    except FileNotFoundError:
+        print("Todavía no existe un archivo de resultados.")
 
 
-print("\n==============================")
-print("       ESTADO FINAL")
-print("==============================")
+def jugar_partida():
+    # Inicializa una partida, reparte las cartas, ejecuta las rondas y muestra resultados.
+    idioma = seleccionar_idioma()
+    estadisticas = crear_estadisticas()
+    jugadores = crear_jugadores()
+    baraja = crear_baraja()
+    revolver_baraja(baraja)
 
-mostrar_jugadores(jugadores)
+    print("\n==============================")
+    print("        LINGUA POKER")
+    print("==============================")
+    repartir_cartas_privadas(jugadores, baraja)
+    print("\nTus cartas privadas:")
+    mostrar_cartas(jugadores[0]["cartas"])
 
-print("\nPozo final:", pozo)
-print("Cartas restantes:", len(baraja))
+    cartas_comunitarias, pozo = jugar_rondas(
+        jugadores, baraja, idioma, estadisticas
+    )
+    finalizar_partida(jugadores, cartas_comunitarias, pozo)
+    mostrar_estadisticas(estadisticas)
 
-print("\n==============================")
-print("       FIN DE LA PARTIDA")
-print("==============================")
+    guardar = input("\nDo you want to save your results? (yes/no): ").strip().lower()
+    if guardar in ("yes", "y"):
+        nombre = input("Enter your name: ").strip()
+        while not nombre:
+            print("Name cannot be empty.")
+            nombre = input("Enter your name: ").strip()
+        guardar_resultados(nombre, idioma, estadisticas)
+    else:
+        print("Results were not saved.")
 
-print("\nCartas comunitarias:")
-mostrar_cartas(cartas_comunitarias)
+    print("\nEstado final de los jugadores:")
+    mostrar_jugadores(jugadores)
+    print("Pozo final:", pozo)
+    print("Cartas restantes:", len(baraja))
+    print("Cartas comunitarias:")
+    mostrar_cartas(cartas_comunitarias)
 
-print("\nEstado de los jugadores:")
-mostrar_jugadores(jugadores)
 
-print("\nPozo acumulado:", pozo)
-print("Cartas restantes:", len(baraja))
+def menu_principal():
+    # Mantiene el programa activo y permite elegir partidas, resultados o salir.
+    while True:
+        print("\n==============================")
+        print("        LINGUA POKER")
+        print("==============================")
+        print("1. Play a game")
+        print("2. View saved results")
+        print("3. Exit")
+        opcion = input("Choose an option: ").strip()
+
+        if opcion == "1":
+            jugar_partida()
+        elif opcion == "2":
+            mostrar_resultados_guardados()
+        elif opcion == "3":
+            print("Thanks for playing Lingua Poker!")
+            break
+        else:
+            print("Invalid option. Please choose 1, 2, or 3.")
+
+
+if __name__ == "__main__":
+    tests()
+    menu_principal()
